@@ -1,0 +1,28 @@
+{
+  "config": {
+    "abort": {
+      "already_configured": "Location is already configured"
+    },
+    "error": {
+      "cannot_connect": "Failed to connect",
+      "unknown": "Unexpected error",
+      "no_location_found": "No location found matching the search"
+    },
+    "step": {
+      "user": {
+        "title": "Add BOM Weather location",
+        "description": "Search for a weather location",
+        "data": {
+          "search": "Search text"
+        }
+      },
+      "select": {
+        "title": "Select the location you want weather information for",
+        "description": "Run the setup again if you want multiple locations",
+        "data": {
+          "location": "Weather location"
+        }
+      }
+    }
+  }
+}

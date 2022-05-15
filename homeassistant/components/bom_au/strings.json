@@ -1,0 +1,26 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "data": {
+          "search": "Search for location"
+        }
+      },
+      "select": {
+        "title": "Select the location you want weather information for",
+        "description": "Run the setup again if you want multiple locations",
+        "data": {
+          "location": "Weather location"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "[%key:common::config_flow::error::cannot_connect%]",
+      "unknown": "[%key:common::config_flow::error::unknown%]",
+      "no_location_found": "No location found matching the search"
+    },
+    "abort": {
+      "already_configured": "[%key:common::config_flow::abort::already_configured_device%]"
+    }
+  }
+}

@@ -47,14 +47,15 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             search = user_input.get("search")
             self.locations = await bomapi.aio.location_search(search)
             if len(self.locations) == 1:
-                self.geohash = self.locations[0].geohash
-                self.name = self.locations[0].name
+                location = self.locations[0]
+                self.geohash = location.geohash
+                self.name = f"{location.name} {location.postcode}"
                 return await self.async_step_connect()
 
             if len(self.locations) > 1:
                 return await self.async_step_select()
 
-            errors["base"] = "no_matching_locations"
+            errors["base"] = "no_location_found"
 
         return self.async_show_form(
             step_id="user", data_schema=STEP_USER_DATA_SCHEMA, errors=errors
@@ -65,18 +66,18 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     ) -> FlowResult:
         """Handle multiple locations found."""
 
+        location_map = {
+            f"{location.name} {location.postcode}": location.geohash
+            for location in self.locations
+        }
+
         if user_input is not None:
-            self.name, self.geohash = cast(
-                str, user_input.get("select_location")
-            ).rsplit("-", 1)
+            self.name = cast(str, user_input.get("location"))
+            self.geohash = location_map[self.name]
             return await self.async_step_connect()
 
         select_scheme = vol.Schema(
-            {
-                vol.Required("select_location"): vol.In(
-                    [location.id for location in self.locations]
-                )
-            }
+            {vol.Required("location"): vol.In(list(location_map.keys()))}
         )
 
         return self.async_show_form(step_id="select", data_schema=select_scheme)

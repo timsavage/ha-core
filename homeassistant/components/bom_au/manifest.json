@@ -1,0 +1,17 @@
+{
+  "domain": "bom_au",
+  "name": "Australian BOM Weather",
+  "config_flow": true,
+  "documentation": "https://www.home-assistant.io/integrations/bom_au",
+  "requirements": [
+    "bomapi==0.1.0"
+  ],
+  "ssdp": [],
+  "zeroconf": [],
+  "homekit": {},
+  "dependencies": [],
+  "codeowners": [
+    "@timsavage"
+  ],
+  "iot_class": "cloud_polling"
+}

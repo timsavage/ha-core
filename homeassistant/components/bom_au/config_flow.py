@@ -11,6 +11,7 @@ from homeassistant import config_entries
 from homeassistant.data_entry_flow import FlowResult
 
 from .const import DOMAIN
+from ...helpers.selector import selector
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -67,20 +68,32 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         """Handle multiple locations found."""
 
         location_map = {
-            f"{location.name} {location.postcode}": location.geohash
+            location.geohash: f"{location.name} {location.postcode}"
             for location in self.locations
         }
 
         if user_input is not None:
-            self.name = cast(str, user_input.get("location"))
-            self.geohash = location_map[self.name]
+            self.geohash = cast(str, user_input.get("location"))
+            self.name = location_map[self.geohash]
             return await self.async_step_connect()
 
-        select_scheme = vol.Schema(
-            {vol.Required("location"): vol.In(list(location_map.keys()))}
+        return self.async_show_form(
+            step_id="select",
+            data_schema=vol.Schema(
+                {
+                    vol.Required("location"): selector(
+                        {
+                            "select": {
+                                "options": [
+                                    {"value": value, "label": label}
+                                    for value, label in location_map.items()
+                                ]
+                            }
+                        }
+                    )
+                }
+            ),
         )
-
-        return self.async_show_form(step_id="select", data_schema=select_scheme)
 
     async def async_step_connect(
         self, user_input: dict[str, Any] | None = None

@@ -1784,7 +1784,7 @@
     },
     "gdacs": {
       "name": "Global Disaster Alert and Coordination System (GDACS)",
-      "integration_type": "hub",
+      "integration_type": "service",
       "config_flow": true,
       "iot_class": "cloud_polling"
     },
@@ -4096,7 +4096,7 @@
     "pushbullet": {
       "name": "Pushbullet",
       "integration_type": "hub",
-      "config_flow": false,
+      "config_flow": true,
       "iot_class": "cloud_polling"
     },
     "pushover": {

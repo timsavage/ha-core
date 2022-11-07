@@ -174,7 +174,7 @@ aioguardian==2022.07.0
 aioharmony==0.2.9
 
 # homeassistant.components.homekit_controller
-aiohomekit==2.2.17
+aiohomekit==2.2.18
 
 # homeassistant.components.emulated_hue
 # homeassistant.components.http
@@ -240,7 +240,7 @@ aiopvpc==3.0.0
 # homeassistant.components.lidarr
 # homeassistant.components.radarr
 # homeassistant.components.sonarr
-aiopyarr==22.10.0
+aiopyarr==22.11.0
 
 # homeassistant.components.qnap_qsw
 aioqsw==0.2.2
@@ -419,10 +419,10 @@ bimmer_connected==0.10.4
 bizkaibus==0.1.1
 
 # homeassistant.components.bluetooth
-bleak-retry-connector==2.8.2
+bleak-retry-connector==2.8.3
 
 # homeassistant.components.bluetooth
-bleak==0.19.1
+bleak==0.19.2
 
 # homeassistant.components.blebox
 blebox_uniapi==2.1.3
@@ -1183,7 +1183,7 @@ nsapi==3.0.5
 nsw-fuel-api-client==1.1.0
 
 # homeassistant.components.nuheat
-nuheat==0.3.0
+nuheat==1.0.0
 
 # homeassistant.components.numato
 numato-gpio==0.10.0
@@ -2087,7 +2087,7 @@ pytrafikverket==0.2.1
 pyudev==0.23.2
 
 # homeassistant.components.unifiprotect
-pyunifiprotect==4.3.4
+pyunifiprotect==4.4.0
 
 # homeassistant.components.uptimerobot
 pyuptimerobot==22.2.0
@@ -2619,7 +2619,7 @@ zengge==0.2
 zeroconf==0.39.4
 
 # homeassistant.components.zha
-zha-quirks==0.0.84
+zha-quirks==0.0.85
 
 # homeassistant.components.zhong_hong
 zhong_hong_hvac==1.0.9

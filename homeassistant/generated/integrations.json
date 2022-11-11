@@ -4170,7 +4170,7 @@
     },
     "qld_bushfire": {
       "name": "Queensland Bushfire Alert",
-      "integration_type": "hub",
+      "integration_type": "service",
       "config_flow": false,
       "iot_class": "cloud_polling"
     },
@@ -4485,6 +4485,12 @@
           "name": "Russound RNET"
         }
       }
+    },
+    "ruuvitag_ble": {
+      "name": "RuuviTag BLE",
+      "integration_type": "hub",
+      "config_flow": true,
+      "iot_class": "local_push"
     },
     "sabnzbd": {
       "name": "SABnzbd",
@@ -5698,7 +5704,7 @@
     },
     "usgs_earthquakes_feed": {
       "name": "U.S. Geological Survey Earthquake Hazards (USGS)",
-      "integration_type": "hub",
+      "integration_type": "service",
       "config_flow": false,
       "iot_class": "cloud_polling"
     },

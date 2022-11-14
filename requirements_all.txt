@@ -37,7 +37,7 @@ PyRMVtransport==0.3.3
 PySocks==1.7.1
 
 # homeassistant.components.switchbot
-PySwitchbot==0.20.3
+PySwitchbot==0.20.4
 
 # homeassistant.components.transport_nsw
 PyTransportNSW==0.1.1
@@ -300,7 +300,7 @@ aioymaps==1.2.2
 airly==1.1.0
 
 # homeassistant.components.airthings_ble
-airthings-ble==0.5.2
+airthings-ble==0.5.3
 
 # homeassistant.components.airthings
 airthings_cloud==0.1.0
@@ -452,9 +452,11 @@ bluetooth-adapters==0.7.0
 # homeassistant.components.bluetooth
 bluetooth-auto-recovery==0.3.6
 
-# homeassistant.components.bluetooth
 # homeassistant.components.led_ble
 bluetooth-data-tools==0.2.0
+
+# homeassistant.components.bluetooth
+bluetooth-data-tools==0.3.0
 
 # homeassistant.components.bond
 bond-async==0.1.22
@@ -741,7 +743,7 @@ gTTS==2.2.4
 garages-amsterdam==3.0.0
 
 # homeassistant.components.google
-gcal-sync==4.0.1
+gcal-sync==4.0.2
 
 # homeassistant.components.geniushub
 geniushub-client==0.6.30
@@ -790,7 +792,7 @@ google-cloud-pubsub==2.13.10
 google-cloud-texttospeech==2.12.3
 
 # homeassistant.components.nest
-google-nest-sdm==2.0.0
+google-nest-sdm==2.1.0
 
 # homeassistant.components.google_travel_time
 googlemaps==2.5.1
@@ -1854,7 +1856,7 @@ pyqwikswitch==0.93
 pyrail==0.0.3
 
 # homeassistant.components.rainbird
-pyrainbird==0.4.3
+pyrainbird==0.6.2
 
 # homeassistant.components.recswitch
 pyrecswitch==1.0.2
@@ -1881,7 +1883,7 @@ pysaj==0.0.16
 pysdcp==1
 
 # homeassistant.components.sensibo
-pysensibo==1.0.20
+pysensibo==1.0.21
 
 # homeassistant.components.serial
 # homeassistant.components.zha
@@ -2418,7 +2420,7 @@ tesla-wall-connector==1.0.2
 # tf-models-official==2.5.0
 
 # homeassistant.components.thermobeacon
-thermobeacon-ble==0.3.2
+thermobeacon-ble==0.4.0
 
 # homeassistant.components.thermopro
 thermopro-ble==0.4.3

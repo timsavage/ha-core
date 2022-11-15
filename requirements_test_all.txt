@@ -617,7 +617,7 @@ greeneye_monitor==3.0.3
 gridnet==4.0.0
 
 # homeassistant.components.growatt_server
-growattServer==1.2.3
+growattServer==1.2.4
 
 # homeassistant.components.google_sheets
 gspread==5.5.0
@@ -1256,7 +1256,7 @@ pynina==0.1.8
 pynobo==1.6.0
 
 # homeassistant.components.nuki
-pynuki==1.5.2
+pynuki==1.6.0
 
 # homeassistant.components.nut
 pynut2==2.1.2
@@ -1792,7 +1792,7 @@ wolf_smartset==0.1.11
 xbox-webapi==2.0.11
 
 # homeassistant.components.xiaomi_ble
-xiaomi-ble==0.10.0
+xiaomi-ble==0.12.1
 
 # homeassistant.components.knx
 xknx==1.2.0

@@ -103,7 +103,7 @@ aio_georss_gdacs==0.7
 aioairq==0.2.4
 
 # homeassistant.components.airzone
-aioairzone==0.4.8
+aioairzone==0.5.1
 
 # homeassistant.components.ambient_station
 aioambient==2021.11.0
@@ -143,7 +143,7 @@ aioecowitt==2022.09.3
 aioemonitor==1.0.5
 
 # homeassistant.components.esphome
-aioesphomeapi==11.4.3
+aioesphomeapi==11.5.0
 
 # homeassistant.components.flo
 aioflo==2021.11.0
@@ -361,7 +361,7 @@ blinkpy==0.19.2
 bluemaestro-ble==0.2.0
 
 # homeassistant.components.bluetooth
-bluetooth-adapters==0.7.0
+bluetooth-adapters==0.8.0
 
 # homeassistant.components.bluetooth
 bluetooth-auto-recovery==0.4.0
@@ -436,7 +436,7 @@ datadog==0.15.0
 datapoint==0.9.8
 
 # homeassistant.components.bluetooth
-dbus-fast==1.74.1
+dbus-fast==1.75.0
 
 # homeassistant.components.debugpy
 debugpy==1.6.3
@@ -1509,7 +1509,7 @@ radios==0.1.1
 radiotherm==2.1.0
 
 # homeassistant.components.rainmachine
-regenmaschine==2022.10.0
+regenmaschine==2022.11.0
 
 # homeassistant.components.renault
 renault-api==0.1.11

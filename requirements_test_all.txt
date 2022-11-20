@@ -43,7 +43,7 @@ PyTransportNSW==0.1.1
 PyTurboJPEG==1.6.7
 
 # homeassistant.components.vicare
-PyViCare==2.17.0
+PyViCare==2.19.0
 
 # homeassistant.components.xiaomi_aqara
 PyXiaomiGateway==0.14.3
@@ -346,7 +346,7 @@ bellows==0.34.2
 bimmer_connected==0.10.4
 
 # homeassistant.components.bluetooth
-bleak-retry-connector==2.8.4
+bleak-retry-connector==2.8.5
 
 # homeassistant.components.bluetooth
 bleak==0.19.2
@@ -386,7 +386,7 @@ brother==2.0.0
 brunt==1.2.0
 
 # homeassistant.components.bthome
-bthome-ble==2.2.1
+bthome-ble==2.3.1
 
 # homeassistant.components.buienradar
 buienradar==1.0.5
@@ -531,7 +531,7 @@ fjaraskupan==2.2.0
 flipr-api==1.4.4
 
 # homeassistant.components.flux_led
-flux_led==0.28.32
+flux_led==0.28.34
 
 # homeassistant.components.homekit
 # homeassistant.components.recorder
@@ -953,7 +953,7 @@ pilight==0.1.1
 pillow==9.3.0
 
 # homeassistant.components.plex
-plexapi==4.13.0
+plexapi==4.13.1
 
 # homeassistant.components.plex
 plexauth==0.0.6
@@ -1354,7 +1354,7 @@ pysiaalarm==3.0.2
 pysignalclirestapi==0.3.18
 
 # homeassistant.components.sma
-pysma==0.7.2
+pysma==0.7.3
 
 # homeassistant.components.smappee
 pysmappee==0.2.29
@@ -1562,6 +1562,9 @@ securetar==2022.2.0
 # homeassistant.components.emulated_kasa
 # homeassistant.components.sense
 sense_energy==0.10.4
+
+# homeassistant.components.sensirion_ble
+sensirion-ble==0.0.1
 
 # homeassistant.components.sensorpro
 sensorpro-ble==0.5.0
@@ -1796,7 +1799,7 @@ xbox-webapi==2.0.11
 xiaomi-ble==0.12.2
 
 # homeassistant.components.knx
-xknx==1.2.0
+xknx==1.2.1
 
 # homeassistant.components.bluesound
 # homeassistant.components.fritz

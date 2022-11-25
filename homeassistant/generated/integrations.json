@@ -2033,12 +2033,6 @@
           "iot_class": "local_polling",
           "name": "Google Cast"
         },
-        "hangouts": {
-          "integration_type": "hub",
-          "config_flow": true,
-          "iot_class": "cloud_push",
-          "name": "Google Chat"
-        },
         "dialogflow": {
           "integration_type": "hub",
           "config_flow": true,
@@ -4608,7 +4602,7 @@
     "scrape": {
       "name": "Scrape",
       "integration_type": "hub",
-      "config_flow": false,
+      "config_flow": true,
       "iot_class": "cloud_polling"
     },
     "screenaway": {
@@ -6167,16 +6161,21 @@
       }
     },
     "yamaha": {
-      "name": "Yamaha Network Receivers",
-      "integration_type": "hub",
-      "config_flow": false,
-      "iot_class": "local_polling"
-    },
-    "yamaha_musiccast": {
-      "name": "MusicCast",
-      "integration_type": "hub",
-      "config_flow": true,
-      "iot_class": "local_push"
+      "name": "Yamaha",
+      "integrations": {
+        "yamaha": {
+          "integration_type": "hub",
+          "config_flow": false,
+          "iot_class": "local_polling",
+          "name": "Yamaha Network Receivers"
+        },
+        "yamaha_musiccast": {
+          "integration_type": "hub",
+          "config_flow": true,
+          "iot_class": "local_push",
+          "name": "MusicCast"
+        }
+      }
     },
     "yandex": {
       "name": "Yandex",

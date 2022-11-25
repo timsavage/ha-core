@@ -9,12 +9,11 @@ from bleak.backends.device import BLEDevice
 from bleak.backends.scanner import AdvertisementData
 import pytest
 
-from homeassistant.components.bluetooth import (
-    BaseHaScanner,
+from homeassistant.components.bluetooth import BaseHaScanner, HaBluetoothConnector
+from homeassistant.components.bluetooth.wrappers import (
+    HaBleakClientWrapper,
     HaBleakScannerWrapper,
-    HaBluetoothConnector,
 )
-from homeassistant.components.bluetooth.wrappers import HaBleakClientWrapper
 
 from . import (
     MockBleakClient,
@@ -201,7 +200,7 @@ async def test_ble_device_with_proxy_client_out_of_connections_uses_best_availab
                 return switchbot_proxy_device_has_connection_slot
             return None
 
-    scanner = FakeScanner(hass, "esp32")
+    scanner = FakeScanner(hass, "esp32", "esp32")
     cancel = manager.async_register_scanner(scanner, True)
     assert manager.async_discovered_devices(True) == [
         switchbot_proxy_device_no_connection_slot
@@ -307,7 +306,7 @@ async def test_ble_device_with_proxy_client_out_of_connections_uses_best_availab
                 return switchbot_proxy_device_has_connection_slot
             return None
 
-    scanner = FakeScanner(hass, "esp32")
+    scanner = FakeScanner(hass, "esp32", "esp32")
     cancel = manager.async_register_scanner(scanner, True)
     assert manager.async_discovered_devices(True) == [
         switchbot_proxy_device_no_connection_slot

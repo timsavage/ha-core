@@ -53,13 +53,24 @@ class SchemaFlowFormStep(SchemaFlowStep):
     - The `validate_user_input` should raise `SchemaFlowError` is user input is invalid.
     """
 
-    next_step: Callable[[dict[str, Any]], str] | str | None = None
+    next_step: Callable[[dict[str, Any]], str | None] | str | None = None
     """Optional property to identify next step.
 
     - If `next_step` is a function, it is called if the schema validates successfully or
     if no schema is defined. The `next_step` function is passed the union of config entry
-    options and user input from previous steps.
+    options and user input from previous steps. If the function returns None, the flow is
+    ended with `FlowResultType.CREATE_ENTRY`.
     - If `next_step` is None, the flow is ended with `FlowResultType.CREATE_ENTRY`.
+    """
+
+    suggested_values: Callable[[SchemaCommonFlowHandler], dict[str, Any]] | None = None
+    """Optional property to populate suggested values.
+
+    - If `suggested_values` is None, each key in the schema will get a suggested value
+    from an option with the same key.
+
+    Note: if a step is retried due to a validation failure, then the user input will have
+    priority over the suggested values.
     """
 
 
@@ -147,13 +158,17 @@ class SchemaCommonFlowHandler:
     def _show_next_step_or_create_entry(
         self, form_step: SchemaFlowFormStep
     ) -> FlowResult:
-        if form_step.next_step is None:
+        next_step_id_or_end_flow: str | None
+
+        if callable(form_step.next_step):
+            next_step_id_or_end_flow = form_step.next_step(self._options)
+        else:
+            next_step_id_or_end_flow = form_step.next_step
+
+        if next_step_id_or_end_flow is None:
             # Flow done, create entry or update config entry options
             return self._handler.async_create_entry(data=self._options)
-
-        if isinstance(form_step.next_step, str):
-            return self._show_next_step(form_step.next_step)
-        return self._show_next_step(form_step.next_step(self._options))
+        return self._show_next_step(next_step_id_or_end_flow)
 
     def _show_next_step(
         self,
@@ -162,10 +177,6 @@ class SchemaCommonFlowHandler:
         user_input: dict[str, Any] | None = None,
     ) -> FlowResult:
         """Show form for next step."""
-        suggested_values = dict(self._options)
-        if user_input:
-            suggested_values.update(user_input)
-
         if isinstance(self._flow[next_step_id], SchemaFlowMenuStep):
             menu_step = cast(SchemaFlowMenuStep, self._flow[next_step_id])
             return self._handler.async_show_menu(
@@ -177,6 +188,15 @@ class SchemaCommonFlowHandler:
 
         if (data_schema := self._get_schema(form_step)) is None:
             return self._show_next_step_or_create_entry(form_step)
+
+        if form_step.suggested_values:
+            suggested_values = form_step.suggested_values(self)
+        else:
+            suggested_values = self._options
+        if user_input:
+            # We don't want to mutate the existing options
+            suggested_values = copy.deepcopy(suggested_values)
+            suggested_values.update(user_input)
 
         if data_schema.schema:
             # Make a copy of the schema with suggested values set to saved options
@@ -203,11 +223,14 @@ class SchemaCommonFlowHandler:
         errors = {"base": str(error)} if error else None
 
         # Show form for next step
+        last_step = None
+        if not callable(form_step.next_step):
+            last_step = form_step.next_step is None
         return self._handler.async_show_form(
             step_id=next_step_id,
             data_schema=data_schema,
             errors=errors,
-            last_step=form_step.next_step is None,
+            last_step=last_step,
         )
 
     async def _async_menu_step(

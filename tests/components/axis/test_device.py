@@ -4,7 +4,6 @@ from unittest import mock
 from unittest.mock import Mock, patch
 
 import axis as axislib
-from axis.event_stream import OPERATION_INITIALIZED
 import pytest
 import respx
 
@@ -275,13 +274,15 @@ def mock_default_vapix_requests(respx: respx, host: str = DEFAULT_HOST) -> None:
     respx.post(f"http://{host}:80/local/vmd/control.cgi").respond(json=VMD4_RESPONSE)
 
 
-async def setup_axis_integration(hass, config=ENTRY_CONFIG, options=ENTRY_OPTIONS):
+async def setup_axis_integration(
+    hass, config=ENTRY_CONFIG, options=ENTRY_OPTIONS, entry_version=3
+):
     """Create the Axis device."""
     config_entry = MockConfigEntry(
         domain=AXIS_DOMAIN,
         data=deepcopy(config),
         options=deepcopy(options),
-        version=3,
+        version=entry_version,
         unique_id=FORMATTED_MAC,
     )
     config_entry.add_to_hass(hass)
@@ -301,20 +302,18 @@ async def test_device_setup(hass):
         return_value=True,
     ) as forward_entry_setup:
         config_entry = await setup_axis_integration(hass)
-        device = hass.data[AXIS_DOMAIN][config_entry.unique_id]
+        device = hass.data[AXIS_DOMAIN][config_entry.entry_id]
 
     assert device.api.vapix.firmware_version == "9.10.1"
     assert device.api.vapix.product_number == "M1065-LW"
     assert device.api.vapix.product_type == "Network Camera"
     assert device.api.vapix.serial_number == "00408C123456"
 
-    entry = device.config_entry
-
     assert len(forward_entry_setup.mock_calls) == 4
-    assert forward_entry_setup.mock_calls[0][1] == (entry, "binary_sensor")
-    assert forward_entry_setup.mock_calls[1][1] == (entry, "camera")
-    assert forward_entry_setup.mock_calls[2][1] == (entry, "light")
-    assert forward_entry_setup.mock_calls[3][1] == (entry, "switch")
+    assert forward_entry_setup.mock_calls[0][1] == (config_entry, "binary_sensor")
+    assert forward_entry_setup.mock_calls[1][1] == (config_entry, "camera")
+    assert forward_entry_setup.mock_calls[2][1] == (config_entry, "light")
+    assert forward_entry_setup.mock_calls[3][1] == (config_entry, "switch")
 
     assert device.host == ENTRY_CONFIG[CONF_HOST]
     assert device.model == ENTRY_CONFIG[CONF_MODEL]
@@ -336,7 +335,7 @@ async def test_device_info(hass):
 
     with patch.dict(API_DISCOVERY_RESPONSE, api_discovery):
         config_entry = await setup_axis_integration(hass)
-        device = hass.data[AXIS_DOMAIN][config_entry.unique_id]
+        device = hass.data[AXIS_DOMAIN][config_entry.entry_id]
 
     assert device.api.vapix.firmware_version == "9.80.1"
     assert device.api.vapix.product_number == "M1065-LW"
@@ -370,7 +369,7 @@ async def test_device_support_mqtt(hass, mqtt_mock):
 async def test_update_address(hass):
     """Test update address works."""
     config_entry = await setup_axis_integration(hass)
-    device = hass.data[AXIS_DOMAIN][config_entry.unique_id]
+    device = hass.data[AXIS_DOMAIN][config_entry.entry_id]
     assert device.api.config.host == "1.2.3.4"
 
     with patch(
@@ -434,7 +433,7 @@ async def test_device_unavailable(hass, mock_rtsp_event, mock_rtsp_signal_state)
 async def test_device_reset(hass):
     """Successfully reset device."""
     config_entry = await setup_axis_integration(hass)
-    device = hass.data[AXIS_DOMAIN][config_entry.unique_id]
+    device = hass.data[AXIS_DOMAIN][config_entry.entry_id]
     result = await device.async_reset()
     assert result is True
 
@@ -463,21 +462,6 @@ async def test_device_unknown_error(hass):
     assert hass.data[AXIS_DOMAIN] == {}
 
 
-async def test_new_event_sends_signal(hass):
-    """Make sure that new event send signal."""
-    entry = Mock()
-    entry.data = ENTRY_CONFIG
-
-    axis_device = axis.device.AxisNetworkDevice(hass, entry, Mock())
-
-    with patch.object(axis.device, "async_dispatcher_send") as mock_dispatch_send:
-        axis_device.async_event_callback(action=OPERATION_INITIALIZED, event_id="event")
-        await hass.async_block_till_done()
-
-    assert len(mock_dispatch_send.mock_calls) == 1
-    assert len(mock_dispatch_send.mock_calls[0]) == 3
-
-
 async def test_shutdown():
     """Successful shutdown."""
     hass = Mock()
@@ -494,7 +478,7 @@ async def test_shutdown():
 async def test_get_device_fails(hass):
     """Device unauthorized yields authentication required error."""
     with patch(
-        "axis.vapix.Vapix.request", side_effect=axislib.Unauthorized
+        "axis.vapix.vapix.Vapix.request", side_effect=axislib.Unauthorized
     ), pytest.raises(axis.errors.AuthenticationRequired):
         await axis.device.get_axis_device(hass, ENTRY_CONFIG)
 
@@ -502,7 +486,7 @@ async def test_get_device_fails(hass):
 async def test_get_device_device_unavailable(hass):
     """Device unavailable yields cannot connect error."""
     with patch(
-        "axis.vapix.Vapix.request", side_effect=axislib.RequestError
+        "axis.vapix.vapix.Vapix.request", side_effect=axislib.RequestError
     ), pytest.raises(axis.errors.CannotConnect):
         await axis.device.get_axis_device(hass, ENTRY_CONFIG)
 
@@ -510,6 +494,6 @@ async def test_get_device_device_unavailable(hass):
 async def test_get_device_unknown_error(hass):
     """Device yield unknown error."""
     with patch(
-        "axis.vapix.Vapix.request", side_effect=axislib.AxisException
+        "axis.vapix.vapix.Vapix.request", side_effect=axislib.AxisException
     ), pytest.raises(axis.errors.AuthenticationRequired):
         await axis.device.get_axis_device(hass, ENTRY_CONFIG)

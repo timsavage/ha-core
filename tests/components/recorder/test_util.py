@@ -6,8 +6,6 @@ from pathlib import Path
 import sqlite3
 from unittest.mock import MagicMock, Mock, patch
 
-from freezegun import freeze_time
-import py
 import pytest
 from sqlalchemy import text
 from sqlalchemy.engine.result import ChunkedIteratorResult
@@ -74,11 +72,11 @@ def test_recorder_bad_execute(hass_recorder: Callable[..., HomeAssistant]) -> No
 
 
 def test_validate_or_move_away_sqlite_database(
-    hass: HomeAssistant, tmpdir: py.path.local, caplog: pytest.LogCaptureFixture
+    hass: HomeAssistant, tmp_path: Path, caplog: pytest.LogCaptureFixture
 ) -> None:
     """Ensure a malformed sqlite database is moved away."""
-
-    test_dir = tmpdir.mkdir("test_validate_or_move_away_sqlite_database")
+    test_dir = tmp_path.joinpath("test_validate_or_move_away_sqlite_database")
+    test_dir.mkdir()
     test_db_file = f"{test_dir}/broken.db"
     dburl = f"{SQLITE_URL_PREFIX}{test_db_file}"
 
@@ -934,7 +932,7 @@ def test_execute_stmt_lambda_element(
             assert rows == ["mock_row"]
 
 
-@freeze_time(datetime(2022, 10, 21, 7, 25, tzinfo=timezone.utc))
+@pytest.mark.freeze_time(datetime(2022, 10, 21, 7, 25, tzinfo=timezone.utc))
 async def test_resolve_period(hass: HomeAssistant) -> None:
     """Test statistic_during_period."""
 

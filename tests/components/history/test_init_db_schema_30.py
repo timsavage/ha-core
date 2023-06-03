@@ -4,17 +4,14 @@ from __future__ import annotations
 # pylint: disable=invalid-name
 from datetime import timedelta
 from http import HTTPStatus
-import importlib
 import json
-import sys
 from unittest.mock import patch, sentinel
 
+from freezegun import freeze_time
 import pytest
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Session
 
 from homeassistant.components import recorder
-from homeassistant.components.recorder import Recorder, core, statistics
+from homeassistant.components.recorder import Recorder
 from homeassistant.components.recorder.history import get_significant_states
 from homeassistant.components.recorder.models import process_timestamp
 from homeassistant.core import HomeAssistant
@@ -29,59 +26,16 @@ from tests.components.recorder.common import (
     assert_states_equal_without_context,
     async_recorder_block_till_done,
     async_wait_recording_done,
+    old_db_schema,
     wait_recording_done,
 )
 from tests.typing import ClientSessionGenerator, WebSocketGenerator
 
-CREATE_ENGINE_TARGET = "homeassistant.components.recorder.core.create_engine"
-SCHEMA_MODULE = "tests.components.recorder.db_schema_30"
-
-
-def _create_engine_test(*args, **kwargs):
-    """Test version of create_engine that initializes with old schema.
-
-    This simulates an existing db with the old schema.
-    """
-    importlib.import_module(SCHEMA_MODULE)
-    old_db_schema = sys.modules[SCHEMA_MODULE]
-    engine = create_engine(*args, **kwargs)
-    old_db_schema.Base.metadata.create_all(engine)
-    with Session(engine) as session:
-        session.add(
-            recorder.db_schema.StatisticsRuns(start=statistics.get_start_time())
-        )
-        session.add(
-            recorder.db_schema.SchemaChanges(
-                schema_version=old_db_schema.SCHEMA_VERSION
-            )
-        )
-        session.commit()
-    return engine
-
 
 @pytest.fixture(autouse=True)
 def db_schema_30():
-    """Fixture to initialize the db with the old schema."""
-    importlib.import_module(SCHEMA_MODULE)
-    old_db_schema = sys.modules[SCHEMA_MODULE]
-
-    with patch.object(recorder, "db_schema", old_db_schema), patch.object(
-        recorder.migration, "SCHEMA_VERSION", old_db_schema.SCHEMA_VERSION
-    ), patch.object(core, "StatesMeta", old_db_schema.StatesMeta), patch.object(
-        core, "EventTypes", old_db_schema.EventTypes
-    ), patch.object(
-        core, "EventData", old_db_schema.EventData
-    ), patch.object(
-        core, "States", old_db_schema.States
-    ), patch.object(
-        core, "Events", old_db_schema.Events
-    ), patch.object(
-        core, "StateAttributes", old_db_schema.StateAttributes
-    ), patch.object(
-        core, "EntityIDMigrationTask", core.RecorderTask
-    ), patch(
-        CREATE_ENGINE_TARGET, new=_create_engine_test
-    ):
+    """Fixture to initialize the db with the old schema 30."""
+    with old_db_schema("30"):
         yield
 
 
@@ -308,29 +262,18 @@ def test_get_significant_states_only(legacy_hass_history) -> None:
         points.append(start + timedelta(minutes=i))
 
     states = []
-    with patch(
-        "homeassistant.components.recorder.core.dt_util.utcnow", return_value=start
-    ):
+    with freeze_time(start) as freezer:
         set_state("123", attributes={"attribute": 10.64})
 
-    with patch(
-        "homeassistant.components.recorder.core.dt_util.utcnow",
-        return_value=points[0],
-    ):
+        freezer.move_to(points[0])
         # Attributes are different, state not
         states.append(set_state("123", attributes={"attribute": 21.42}))
 
-    with patch(
-        "homeassistant.components.recorder.core.dt_util.utcnow",
-        return_value=points[1],
-    ):
+        freezer.move_to(points[1])
         # state is different, attributes not
         states.append(set_state("32", attributes={"attribute": 21.42}))
 
-    with patch(
-        "homeassistant.components.recorder.core.dt_util.utcnow",
-        return_value=points[2],
-    ):
+        freezer.move_to(points[2])
         # everything is different
         states.append(set_state("412", attributes={"attribute": 54.23}))
 
@@ -398,9 +341,7 @@ def record_states(hass):
     four = three + timedelta(seconds=1)
 
     states = {therm: [], therm2: [], mp: [], mp2: [], mp3: [], script_c: []}
-    with patch(
-        "homeassistant.components.recorder.core.dt_util.utcnow", return_value=one
-    ):
+    with freeze_time(one) as freezer:
         states[mp].append(
             set_state(mp, "idle", attributes={"media_title": str(sentinel.mt1)})
         )
@@ -414,17 +355,12 @@ def record_states(hass):
             set_state(therm, 20, attributes={"current_temperature": 19.5})
         )
 
-    with patch(
-        "homeassistant.components.recorder.core.dt_util.utcnow",
-        return_value=one + timedelta(microseconds=1),
-    ):
+        freezer.move_to(one + timedelta(microseconds=1))
         states[mp].append(
             set_state(mp, "YouTube", attributes={"media_title": str(sentinel.mt2)})
         )
 
-    with patch(
-        "homeassistant.components.recorder.core.dt_util.utcnow", return_value=two
-    ):
+        freezer.move_to(two)
         # This state will be skipped only different in time
         set_state(mp, "YouTube", attributes={"media_title": str(sentinel.mt3)})
         # This state will be skipped because domain is excluded
@@ -439,9 +375,7 @@ def record_states(hass):
             set_state(therm2, 20, attributes={"current_temperature": 19})
         )
 
-    with patch(
-        "homeassistant.components.recorder.core.dt_util.utcnow", return_value=three
-    ):
+        freezer.move_to(three)
         states[mp].append(
             set_state(mp, "Netflix", attributes={"media_title": str(sentinel.mt4)})
         )
@@ -1025,6 +959,7 @@ async def test_history_during_period_bad_start_time(
             {
                 "id": 1,
                 "type": "history/history_during_period",
+                "entity_ids": ["sensor.pet"],
                 "start_time": "cats",
             }
         )
@@ -1051,6 +986,7 @@ async def test_history_during_period_bad_end_time(
             {
                 "id": 1,
                 "type": "history/history_during_period",
+                "entity_ids": ["sensor.pet"],
                 "start_time": now.isoformat(),
                 "end_time": "dogs",
             }

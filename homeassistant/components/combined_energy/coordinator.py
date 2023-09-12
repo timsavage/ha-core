@@ -8,13 +8,14 @@ from typing import Generic, TypeVar
 from combined_energy import CombinedEnergy
 from combined_energy.exceptions import CombinedEnergyAuthError, CombinedEnergyError
 from combined_energy.helpers import ReadingsIterator
-from combined_energy.models import DeviceReadings
+from combined_energy.models import ConnectionStatus, DeviceReadings
 
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .const import (
+    CONNECTIVITY_UPDATE_DELAY,
     LOG_SESSION_REFRESH_DELAY,
     LOGGER,
     READINGS_INCREMENT,
@@ -65,6 +66,21 @@ class CombinedEnergyDataService(Generic[_T]):
         except CombinedEnergyError as ex:
             raise UpdateFailed("Error updating Combined Energy") from ex
         return self.data
+
+
+class CombinedEnergyConnectivityDataService(
+    CombinedEnergyDataService[ConnectionStatus]
+):
+    """Get and update the latest connectivity status data."""
+
+    @property
+    def update_interval(self) -> timedelta:
+        """Update interval."""
+        return CONNECTIVITY_UPDATE_DELAY
+
+    async def update_data(self) -> ConnectionStatus:
+        """Update data."""
+        return await self.api.communication_status()
 
 
 class CombinedEnergyLogSessionService(CombinedEnergyDataService[None]):
